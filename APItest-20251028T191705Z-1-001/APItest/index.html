@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trivia Game</title>
+</head>
+<body>
+
+<h2>Trivia Game 🎯</h2>
+<button id="askBtn">Ask Question</button>
+<div id="question"></div>
+
+<input id="answerInput" placeholder="Your answer..." />
+<button id="submitBtn">Submit</button>
+
+<div id="result"></div>
+
+<script>
+    const apiUrl = "https://trivia-by-api-ninjas.p.rapidapi.com/v1/trivia";
+    const options = {
+        method: "GET",
+        headers: {
+            "x-rapidapi-host": "trivia-by-api-ninjas.p.rapidapi.com",
+            "x-rapidapi-key": "e8be2e52fbmsh81e937020413d17p137e8cjsn26a43b1dbafb"
+        }
+    };
+
+    let correctAnswer = "";
+
+    async function askQuestion() {
+        document.getElementById("result").textContent = "";
+        document.getElementById("answerInput").value = "";
+
+        try {
+            const res = await fetch(apiUrl, options);
+            const data = await res.json();
+            console.log(data);
+            const randnum = Math.round(Math.random()*data.length)
+            const question = data[randnum].question;
+            correctAnswer = data[randnum].answer;
+
+            document.getElementById("question").textContent = question;
+            console.log("Correct answer:", correctAnswer);
+        } catch (err) {
+            console.error(err);
+            document.getElementById("question").textContent = "Error fetching question.";
+        }
+    }
+
+    function checkAnswer() {
+        const userAnswer = document.getElementById("answerInput").value.trim().toLowerCase();
+        const correct = correctAnswer.trim().toLowerCase();
+
+        if (!correctAnswer) {
+            document.getElementById("result").textContent = "Click 'Ask Question' first!";
+            return;
+        }
+
+        if (userAnswer === correct) {
+            document.getElementById("result").textContent = "✅ Correct!";
+        } else {
+            document.getElementById("result").textContent = `❌ Wrong! The correct answer was: ${correctAnswer}`;
+        }
+    }
+
+    document.getElementById("askBtn").addEventListener("click", askQuestion);
+    document.getElementById("submitBtn").addEventListener("click", checkAnswer);
+</script>
+</body>
+</html>
